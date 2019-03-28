@@ -1,0 +1,59 @@
+Sudo apt install squid
+
+#Setelah di install kemudian edit squid dengan perintah:
+
+Nano /etc/squid/squid.conf
+
+#Tekan Ctrl+W untuk mencari, lalu “192.168.0.0”, hilangkan tanda “#” lalu sesuaikan dengan subnet kalian. contoh “192.168.1.0/24”.
+
+#Lalu telusuri ke bawah tepatnya dibawah acl Connect methd connect. tambahkan teks “acl terlarang url_regex –i “/etc/squid/terlarang.txt”
+
+#Tekan Ctrl+W untuk mencari, lalu ketikan “And finally deny all other access to this proxy”. Lalu hilangkan tanda “#” pada http_access allow localnet & http_access allow localhost .
+
+#Kemudian tambahkan teks “ http_access deny terlarang”
+
+#Tekan Ctrl+W untuk mencari, lalu ketikan “3128”. Lalu tambahkan dibawahnya http_port 3128 transparent
+
+request_header_access Referer deny all
+
+request_header_access X-Forwarded-For deny all
+
+request_header_access Via deny all
+
+request_header_access Cache-Control deny all
+
+forwarded_for off deny_info http://192.168.1.1/error.html terlarang
+
+#lalu masukan alamat web yang akan di blok:
+
+sudo nano /etc/squid/terlarang.txt
+
+#perintah untuk membelokan yang memiliki port 80 dengan perintah:
+
+iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3128
+
+#untuk mengecek dengan perintah:
+
+iptables –t nat –L
+
+#jika muncul “tcp dpt:http redir ports 3128” maka itu artinya berhasil.
+
+#	Untuk menyimpan dengan perintah :
+
+Iptables-save > /etc/network/ipitables.conf
+
+#	Lalu edit file error.html dengan perintah
+
+Nano /var/www/html/error.html
+
+#	Untuk mengeditnya gunakan bahasa HTML dengan teks bebas lalu save.
+
+#	Untuk memastikan konfigurasi benar masukan perintah:
+
+“squid –k reconfigure”
+
+#	Restart squid dengan perintah:
+
+Service squid restart.
+
+Untuk mengeceknya anda dapat menggunakan client dengan mencoba browsing ke alamat web yang di blok kita. Jika berhasil akan muncul teks yang ada pada file error.html.
