@@ -1,0 +1,121 @@
+apt-get install bind9
+nano /etc/bind/named.conf
+
+zone "bem.poltektedc.org" {
+type master;
+file "/etc/bind/db.bem";
+
+};
+
+zone "1.168.192.in-addr.arpa" {
+type master;
+file "/etc/bind/db.bem.rev";
+
+};
+
+•	dari konfigurasi diatas file db.nothinux adalah file forward sedangkan file db.nothinux.rev adalah file reverse lalu kita salin konfigurasi file forward yang sudah ada sebelumnya ke konfigurasi forward yang baru. konfigurasi db.local ke db.bem menggunakan perintah dibawah:
+
+root # cp /etc/bind/db.local /etc/bind/db.bem
+
+•	lalu lakukan hal yang sama pada file reverse, saya menamakan file reverse dengan nama db.bem.rev. kita salin file db.127 ke db.bem.rev
+
+root # cp /etc/bind/db.127 /etc/bind/db.bem.rev
+
+•	lalu masuk file db.bem.
+
+root # nano /etc/bind/db.bem
+
+•	ganti localhost dengan nama domain, dan ip 127.0.0.1 ganti dengan ip 
+
+;
+; BIND data file for local loopback interface
+;
+
+$TTL 604800
+
+@ IN SOA bem.poltektedc.org. root.bem.poltektedc.org. (
+
+                          2         ; Serial
+                     604800         ; Refresh
+                      86400         ; Retry
+                    2419200         ; Expire
+                     604800 )       ; Negative Cache TTL
+; @ IN NS ns.bem.poltektedc.org.
+@ IN A 192.168.1.1
+www IN A bem.poltektedc.org.
+
+•	lalu ubah file db.nothinux.rev, ganti localhost dengan nama domain, dan ip 127.0.0.1 ganti dengan ip anda. root # nano /etc/bind/db.bem.rev
+
+;
+; BIND reverse data file for local loopback interface
+;
+
+$TTL 604800
+
+@ IN SOA bem.poltektedc.org. root.bem.poltektedc.org.id. (
+
+                          1         ; Serial
+                     604800         ; Refresh
+                      86400         ; Retry
+                    2419200         ; Expire
+                     604800 )       ; Negative Cache TTL
+; @ IN NS nsbem.poltektedc.org.
+
+1 IN PTR bem.poltektedc.org.
+
+•	Setelah itu ubah file /etc/resolv.conf
+
+root # nano /etc/resolv.conf
+
+nameserver 192.168.1.1
+#nameserver 8.8.4.4
+Search bem.poltektedc.org
+
+•	Lalu restart service BIND9
+
+root # service bind9 restart
+
+•	Untuk mengeceknya kita bisa menggunakan
+
+root # service bind9 status
+
+bind9.service - BIND Domain Name Server
+
+Loaded: loaded (/lib/systemd/system/bind9.service; enabled; vendor preset: enabled)
+
+Drop-In: /run/systemd/generator/bind9.service.d
+
+       └─50-insserv.conf-$named.conf
+Active: active (running) since Sat 2019-03-23 23:45:47 WIB; 2min 16s ago
+
+ Docs: man:named(8)
+Main PID: 1258 (named)
+
+Tasks: 4
+Memory: 10.8M
+
+  CPU: 73ms
+CGroup: /system.slice/bind9.service
+
+       └─1258 /usr/sbin/named -f -u bind
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: zone 0.in-addr.arpa/IN: loaded serial 1
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: zone 127.in-addr.arpa/IN: loaded serial 1
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: zone 255.in-addr.arpa/IN: loaded serial 1
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: zone localhost/IN: loaded serial 2
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: zone \0321.168.192.in-addr.arpa/IN: loaded serial 1
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: zone bem.poltektedc.org/IN: loaded serial 2
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: all zones loaded
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: running
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: zone bem.poltektedc.org/IN: sending notifies (serial 2)
+
+Mar 23 23:45:48 ubuntu.admin.id named[1258]: zone \0321.168.192.in-addr.arpa/IN: sending notifies (serial 1)
+
+Jika statusnya active(running) dan tidak ada error itu artinya konfigurasi berhasil
