@@ -1,0 +1,12 @@
+#install paket ssh
+
+sudo apt-get install ssh
+
+#restart
+
+sudo nano /etc/init.d/ssh restart
+
+#untuk mengecek apak sudah berhasil atau tidak buka putty, masukan ip server, dan juga port.
+
+Jika berhasil login artisan ssh berhasil terinstall
+
