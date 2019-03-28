@@ -1,0 +1,13 @@
+Sudo apt-get update
+
+#Install nagios 3 dan plugin 
+
+Sudo apt-get install nagios3 nagios plugin 
+
+#	Tambahkan Username di nagios
+
+Sudo htpasswd /etc/nagios3/htpasswd.users <username>
+
+#Kemudian masukan password untuk nagios3 .
+  <yourPassword>
+  
