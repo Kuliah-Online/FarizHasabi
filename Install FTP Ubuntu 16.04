@@ -1,0 +1,19 @@
+sudo apt-get install vsftpd
+
+#Buka file konfigurasi
+
+sudo nano /etc/vsftpd.conf
+
+#Aktifkan/Tambah
+opsi write_enable 
+write_enable=YES
+dengan menghapus karakter # dan ubah nilainya menjadi YES. Opsi ini agar dapat melakukan penulisan file (upload/create/delete) pada server.
+
+
+#	Restart service dan cek statusnya
+
+sudo systemctl restart vsftpd
+
+sudo systemctl status vsftpd
+
+Jika status “active(running)” artinya ftp berhasil terinstal.
