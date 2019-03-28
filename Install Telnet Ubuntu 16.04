@@ -1,0 +1,53 @@
+sudo apt-get install xinetd telnetd
+Sudo nano /etc/inetd.conf
+telnet stream tcp nowait telnetd /usr/sbin/tcpd /usr/sbin/in.telnetd
+
+Sudo nano /etc/xinetd.conf
+
+log_type = SYSLOG daemon info
+instances = 60
+
+log_type = SYSLOG authpriv
+
+log_on_success = HOST PID
+
+log_on_failure = HOST
+
+cps = 25 30
+
+Sudo nano /etc/services
+telnet 23/tcp
+
+Sudo nano etc/xinetd.d/telnet
+service telnet
+
+{
+
+disable = no
+
+flags = REUSE
+
+socket_type = stream
+
+wait = no
+
+user = root
+
+server = /usr/sbin/in.telnetd
+
+log_on_failure += USERID
+
+}
+
+only_from = 192.168.120.0/24 #Only users in 192.168.120.0 can access to
+
+only_from = .bob.com #allow access from bob.com
+
+no_access = 192.168.120.{101,105} #not allow access from the two IP.
+
+access_times = 8:00-9:00 20:00-21:00 #allow access in the two times
+
+#Perintah untuk restart telnet
+
+sudo /etc/init.d/xinetd restart
+
